@@ -10,7 +10,7 @@ from srt_processing import split_text
 from audio_processing import extract_audio
 
 
-def get_audiosentence_objects(author, language, srt_file_path, directory_name, starting_count):
+def get_audiosentence_objects(author, language, srt_file_path, directory_name, starting_count: int, minimum_words_for_sentence: int, maximum_words_for_sentence: int, minimum_duration_in_seconds: float, maximum_duration_in_seconds: float):
 
     file = open(srt_file_path, "r")
     lines = file.readlines()
@@ -42,20 +42,23 @@ def get_audiosentence_objects(author, language, srt_file_path, directory_name, s
         if ((secondSentence.rstrip().endswith('.') or secondSentence.rstrip().endswith('?')) or (secondSentence == '' and (firstSentence.rstrip().endswith('.') or firstSentence.rstrip().endswith('?')))):
           final_sentence = ' '.join([x.sentence for x in audiosentence_tmp_array])
           final_sentence = process_string(final_sentence, language)
-          audio_title = directory_name + '_' + str(count)
-
-          # set
-          final_obj = Audio_Sentence(author, final_sentence, audiosentence_tmp_array[0].start_time, audiosentence_tmp_array[len(audiosentence_tmp_array) - 1].end_time, audio_title)
+          final_audio_title = directory_name + '_' + str(count)
           
-          # reset
-          count += 1
-          audiosentence_tmp_array = []
-          audiosentence_final_array.append(final_obj)
+          # set if the minimum_words is respected
+          final_obj = Audio_Sentence(author, final_sentence, audiosentence_tmp_array[0].start_time, audiosentence_tmp_array[len(audiosentence_tmp_array) - 1].end_time, final_audio_title)
+          num_of_words = len(final_obj.sentence.split())
+          duration = final_obj.duration()
+          if (num_of_words >= minimum_words_for_sentence and num_of_words < maximum_words_for_sentence and duration <= maximum_duration_in_seconds and duration >= minimum_duration_in_seconds):
+            count += 1
+            audiosentence_final_array.append(final_obj)
 
+          # reset
+          audiosentence_tmp_array = []
     return audiosentence_final_array
 
 
-def produceSpeechDataset(author, language, unique_source_audio_path, raw_dataset_path, output_path):
+def produceSpeechDataset(author, language, raw_dataset_path, output_path, minimum_words_for_sentence = 10, maximum_words_for_sentence = 2000, minimum_duration_in_seconds: float = 5, maximum_duration_in_seconds: float = 40):
+  tmp_audio_url = 'tmp_audio.wav'
   os.mkdir(output_path)
   author_path = output_path+author
   wavs_path = author_path+'/wavs/'
@@ -74,27 +77,28 @@ def produceSpeechDataset(author, language, unique_source_audio_path, raw_dataset
       for filename in os.listdir(raw_dataset_path + subdirectory):
         # get the mp4 and get its audio as .wav file. Saving this audio as 'audio.wav'
         if filename.lower().endswith('.mp4'):
-          extract_audio(root+subdirectory+ '/'+filename, unique_source_audio_path)
+          extract_audio(root+subdirectory+ '/'+filename, tmp_audio_url)
         # get the .srt file and getting the SentenceObjects.
         if filename.lower().endswith('.srt'):
-          subtitle_objects = get_audiosentence_objects(author, language, root+subdirectory+'/'+filename, subdirectory, wavs_count)
+          subtitle_objects = get_audiosentence_objects(author, language, root+subdirectory+'/'+filename, subdirectory, wavs_count, minimum_words_for_sentence, maximum_words_for_sentence, minimum_duration_in_seconds, maximum_duration_in_seconds)
           wavs_count += (len(subtitle_objects)-1)
       # for each subtitle_object generated we cut the extracted audio in the interval (start_time-->end_time) 
       # and write the output audio in the wavs_path. Adding also the informations of the output audio in the .csv file
       for obj in subtitle_objects:
-        filename = obj.audio_title
+        audio_title = obj.audio_title
         ext = '.wav'
         sentence = obj.sentence.strip()
         if sentence.endswith('.') == False and sentence.endswith('?') == False:
           sentence += '.'
-        f.write('wavs/' + filename + ext + '|' + sentence + '\n')
-        obj.write_audiosentence(unique_source_audio_path, wavs_path)
+        f.write('wavs/' + audio_title + ext + '|' + sentence + '\n')
+        obj.write_audiosentence(tmp_audio_url, wavs_path)
       objects += subtitle_objects
-  #os.remove('audio.wav')
+  if os.path.exists(tmp_audio_url):
+      os.remove(tmp_audio_url)
   f.close()
   return objects
 
-def create_histogram(objects): # input will be an array of SentenceObjects
+def create_histogram(objects: list[Audio_Sentence]): # input will be an array of Audio Sentence
   durations = list(object.duration() for object in objects)
   # formula to calculate the bins
   bins = 20
