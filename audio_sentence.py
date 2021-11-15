@@ -28,11 +28,11 @@ class Audio_Sentence:
     """
     author = ''
     sentence = ''
-    startTime = 0
-    endTime = 0
+    start_time = 0
+    end_time = 0
     audio_title = ''
 
-    def __init__(self, author, sentence, startTime, endTime, audio_title):
+    def __init__(self, author, sentence, start_time, end_time, audio_title):
         """
         Parameters
         ----------
@@ -47,9 +47,9 @@ class Audio_Sentence:
         """
         self.author = author
         self.sentence = sentence
+        self.start_time = start_time
+        self.end_time = end_time
         self.audio_title = audio_title
-        self.startTime = startTime
-        self.endTime = endTime
   
     def write_audiosentence(self, source_path, destination_path):
         """
@@ -67,13 +67,13 @@ class Audio_Sentence:
         an audio file.
 
         """        
-        t1 = float(self.startTime) * 1000
-        t2 = float(self.endTime) * 1000
-        newAudio = AudioSegment.from_wav(source_path)
-        newAudio = newAudio[t1:t2]
-        newAudio = newAudio.set_frame_rate(22050)
-        newAudio = newAudio.set_channels(1)
-        return newAudio.export(destination_path + '/' + self.audio_title + '.wav', format="wav")
+        t1 = float(self.start_time) * 1000
+        t2 = float(self.end_time) * 1000
+        new_audio = AudioSegment.from_wav(source_path)
+        new_audio=new_audio[t1:t2]
+        new_audio = new_audio.set_frame_rate(22050)
+        new_audio = new_audio.set_channels(1)
+        return new_audio.export(destination_path + '/' + self.audio_title + '.wav', format="wav")
 
     def duration(self):
         """
@@ -84,9 +84,9 @@ class Audio_Sentence:
         the duration of the file.
 
         """ 
-        return (float(self.endTime) - float(self.startTime))
+        return (float(self.end_time) - float(self.start_time))
 
     def debug_print(self):
       print("Sentence: " + self.sentence + "\n" 
-            + "start time: " + self.startTime + "\n"
-            + "end time: " + self.endTime)
+            + "start time: " + self.start_time + "\n"
+            + "end time: " + self.end_time)
