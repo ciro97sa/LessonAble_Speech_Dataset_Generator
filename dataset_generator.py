@@ -67,12 +67,12 @@ def produceSpeechDataset(author, language, raw_dataset_path, output_path, minimu
 
    # an output folder called 'wavs' and a 'metadata.csv' file will be generated
   f = open(author_path + "/filelists" + ".txt", "w", encoding="utf-8")
-  objects = [Audio_Sentence]
+  objects = []
   for root, subdirectories, files in os.walk(raw_dataset_path):
     for subdirectory in subdirectories:
       wavs_count = 0
       #initialize variables
-      subtitle_objects = [Audio_Sentence]
+      subtitle_objects = []
       print('\n Processing ' + subdirectory + ' directory...')
       for filename in os.listdir(raw_dataset_path + subdirectory):
         # get the mp4 and get its audio as .wav file. Saving this audio as 'audio.wav'
@@ -98,7 +98,8 @@ def produceSpeechDataset(author, language, raw_dataset_path, output_path, minimu
   f.close()
   return objects
 
-def create_histogram(objects: list[Audio_Sentence]): # input will be an array of Audio Sentence
+
+def create_histogram(objects): # input will be an array of Audio Sentence
   durations = list(object.duration() for object in objects)
   # formula to calculate the bins
   bins = 20
