@@ -1,0 +1,5 @@
+pydub
+ffmpeg
+moviepy
+num2words
+matplotlib
