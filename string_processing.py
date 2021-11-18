@@ -15,6 +15,14 @@ def time_to_seconds(time_string) -> float:
     seconds = a_timedelta.total_seconds()
     return seconds
 
+def convert_comma_numbers(s):
+    pattern = re.compile("(\d+,\d+)")
+    if pattern.match(s):
+        string = s.replace(',', '.')
+        return string
+    else:
+        return s
+
 def text_num_2_str(text, language) -> str:
     """
     converts a text containing numbers to a text with those numbers converted to strings in the given language. For now IT and EN are supported

@@ -1,5 +1,7 @@
 import re
 from pydub import AudioSegment
+from silence_audio import vad_collector, frame_generator, read_wave, write_wave, webrtcvad
+import os
 
 class Audio_Sentence:
     """
@@ -71,9 +73,45 @@ class Audio_Sentence:
         t2 = float(self.end_time) * 1000
         new_audio = AudioSegment.from_wav(source_path)
         new_audio=new_audio[t1:t2]
-        new_audio = new_audio.set_frame_rate(22050)
+        new_audio = new_audio.set_frame_rate(32000)
         new_audio = new_audio.set_channels(1)
-        return new_audio.export(destination_path + '/' + self.audio_title + '.wav', format="wav")
+        new_audio = new_audio.set_sample_width(2)
+
+        # trimming first and last silences.
+        start_trim = self.detect_silence(new_audio)
+        end_trim = self.detect_silence(new_audio.reverse())
+        duration = len(new_audio)    
+        trimmed_sound = new_audio[start_trim:duration-end_trim]
+        trimmed_sound.export('tmp.wav', format='wav')
+
+        audio, sample_rate = read_wave('tmp.wav')
+        vad = webrtcvad.Vad(3)
+        frames = frame_generator(30, audio, sample_rate)
+        frames = list(frames)
+        segments = vad_collector(sample_rate, 30, 300, vad, frames)
+
+    # Segmenting the Voice audio and save it in list as bytes
+        concataudio = [segment for segment in segments]
+        joinedaudio = b"".join(concataudio)
+        if os.path.exists('tmp.wav'):
+            os.remove('tmp.wav')
+        write_wave(destination_path + '/' + self.audio_title + '.wav', joinedaudio, sample_rate)
+    
+    def detect_silence(self, sound, silence_threshold=-50.0, chunk_size=10) -> float:
+        """
+        sound is a pydub.AudioSegment
+        silence_threshold in dB
+        chunk_size in ms
+
+        iterate over chunks until you find the first one with sound
+        """
+        trim_ms = 0 # ms
+
+        assert chunk_size > 0 # to avoid infinite loop
+        while sound[trim_ms:trim_ms+chunk_size].dBFS < silence_threshold and trim_ms < len(sound):
+            trim_ms += chunk_size
+
+        return trim_ms
 
     def duration(self):
         """

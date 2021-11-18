@@ -3,3 +3,4 @@ ffmpeg
 moviepy
 num2words
 matplotlib
+webrtcvad

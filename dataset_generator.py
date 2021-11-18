@@ -3,9 +3,7 @@ from math import sqrt
 import numpy as np
 import matplotlib.pyplot as plt
 from audio_sentence import Audio_Sentence
-from string_processing import time_to_seconds
-from string_processing import text_num_2_str
-from string_processing import process_string
+from string_processing import time_to_seconds, text_num_2_str, process_string
 from srt_processing import split_text
 from audio_processing import extract_audio
 
@@ -57,7 +55,7 @@ def get_audiosentence_objects(author, language, srt_file_path, directory_name, s
     return audiosentence_final_array
 
 
-def produceSpeechDataset(author, language, raw_dataset_path, output_path, minimum_words_for_sentence = 10, maximum_words_for_sentence = 2000, minimum_duration_in_seconds: float = 5, maximum_duration_in_seconds: float = 40):
+def produceSpeechDataset(author, language, raw_dataset_path, output_path, minimum_words_for_sentence = 10, maximum_words_for_sentence = 2000, minimum_duration_in_seconds: float = 5, maximum_duration_in_seconds: float = 10):
   tmp_audio_url = 'tmp_audio.wav'
   os.mkdir(output_path)
   author_path = output_path+author
