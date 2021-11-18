@@ -73,7 +73,30 @@ class Audio_Sentence:
         new_audio=new_audio[t1:t2]
         new_audio = new_audio.set_frame_rate(22050)
         new_audio = new_audio.set_channels(1)
-        return new_audio.export(destination_path + '/' + self.audio_title + '.wav', format="wav")
+        new_audio = new_audio.set_sample_width(2)
+
+        # trimming first and last silences.
+        start_trim = self.detect_silence(new_audio)
+        end_trim = self.detect_silence(new_audio.reverse())
+        duration = len(new_audio)    
+        trimmed_sound = new_audio[start_trim:duration-end_trim]
+        return trimmed_sound.export(destination_path + '/' + self.audio_title + '.wav', format="wav")
+
+    def detect_silence(self, sound, silence_threshold=-50.0, chunk_size=10) -> float:
+        """
+        sound is a pydub.AudioSegment
+        silence_threshold in dB
+        chunk_size in ms
+
+        iterate over chunks until you find the first one with sound
+        """
+        trim_ms = 0 # ms
+
+        assert chunk_size > 0 # to avoid infinite loop
+        while sound[trim_ms:trim_ms+chunk_size].dBFS < silence_threshold and trim_ms < len(sound):
+            trim_ms += chunk_size
+
+        return trim_ms
 
     def duration(self):
         """
