@@ -82,7 +82,7 @@ class Audio_Sentence:
         trimmed_sound = new_audio[start_trim:duration-end_trim]
         return trimmed_sound.export(destination_path + '/' + self.audio_title + '.wav', format="wav")
 
-    def detect_silence(self, sound, silence_threshold=-50.0, chunk_size=10) -> float:
+    def detect_silence(self, sound, silence_threshold=-30.0, chunk_size=10) -> float:
         """
         sound is a pydub.AudioSegment
         silence_threshold in dB

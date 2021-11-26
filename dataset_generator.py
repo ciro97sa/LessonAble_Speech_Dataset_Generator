@@ -8,6 +8,7 @@ from string_processing import text_num_2_str
 from string_processing import process_string
 from srt_processing import split_text
 from audio_processing import extract_audio
+import mimetypes
 
 
 def get_audiosentence_objects(author, language, srt_file_path, directory_name, starting_count: int, minimum_words_for_sentence: int, maximum_words_for_sentence: int, minimum_duration_in_seconds: float, maximum_duration_in_seconds: float):
@@ -76,7 +77,12 @@ def produceSpeechDataset(author, language, raw_dataset_path, output_path, minimu
       print('\n Processing ' + subdirectory + ' directory...')
       for filename in os.listdir(raw_dataset_path + subdirectory):
         # get the mp4 and get its audio as .wav file. Saving this audio as 'audio.wav'
-        if filename.lower().endswith('.mp4'):
+        mimetypes.init()
+        mimestart = mimetypes.guess_type(filename)[0]
+
+        if mimestart != None:
+           mimestart = mimestart.split('/')[0]
+        if mimestart in ['video']:
           extract_audio(root+subdirectory+ '/'+filename, tmp_audio_url)
         # get the .srt file and getting the SentenceObjects.
         if filename.lower().endswith('.srt'):
@@ -106,3 +112,7 @@ def create_histogram(objects): # input will be an array of Audio Sentence
   #int((np.max(durations) - np.min(durations))/sqrt(len(durations)))
   plt.hist(durations, bins = bins)
   plt.show()
+
+def get_total_duration(objects):
+  durations = list(object.duration() for object in objects)
+  return sum(durations)
