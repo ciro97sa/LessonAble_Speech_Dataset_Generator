@@ -1,6 +1,6 @@
 import re
 from pydub import AudioSegment
-from noise_reduction.silence_audio import read_wave, write_wave, frame_generator, vad_collector, webrtcvad
+from sources.noise_reduction.silence_audio import read_wave, write_wave, frame_generator, vad_collector, webrtcvad
 import noisereduce as nr
 from scipy.io import wavfile
 

@@ -3,9 +3,9 @@ from math import sqrt
 import numpy as np
 import matplotlib.pyplot as plt
 from audio_sentence import Audio_Sentence
-from raw_data_preprocessing.string_processing import time_to_seconds, text_num_2_str, process_string
-from raw_data_preprocessing.srt_processing import split_text
-from raw_data_preprocessing.audio_processing import extract_audio
+from sources.raw_data_preprocessing.string_processing import time_to_seconds, text_num_2_str, process_string
+from sources.raw_data_preprocessing.srt_processing import split_text
+from sources.raw_data_preprocessing.audio_processing import extract_audio
 import mimetypes
 
 
