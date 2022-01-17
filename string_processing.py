@@ -16,6 +16,7 @@ def time_to_seconds(time_string) -> float:
     return seconds
 
 def convert_comma_numbers(s):
+    s = s.lstrip('.').rstrip('.')
     pattern = re.compile("(\d+,\d+)")
     if pattern.match(s):
         string = s.replace(',', '.')
@@ -37,6 +38,6 @@ def text_num_2_str(text, language) -> str:
 def process_string(sentence, language):
   # 1. convert the numbers to string with the assigned language
   new_sentence = text_num_2_str(sentence, language)
-  new_sentence = re.sub('[^0-9a-zA-Z.,!?\s]+', '', new_sentence)
+  new_sentence = re.sub("[^0-9a-zA-Z.,'!?_À-ÿ\s]+", '', new_sentence)
   new_sentence_without_double_spaces = re.sub(' +', ' ', new_sentence)
   return new_sentence_without_double_spaces

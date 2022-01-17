@@ -89,7 +89,7 @@ def produceSpeechDataset(author, language, raw_dataset_path, output_path, minimu
         if sentence.endswith('.') == False and sentence.endswith('?') == False:
           sentence += '.'
         f.write('wavs/' + audio_title + ext + '|' + sentence + '\n')
-        obj.write_audiosentence(tmp_audio_url, wavs_path)
+        obj.write_audiosentence(tmp_audio_url, wavs_path, True, True)
       objects += subtitle_objects
   if os.path.exists(tmp_audio_url):
       os.remove(tmp_audio_url)
