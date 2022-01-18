@@ -6,7 +6,7 @@ The following lines of code will separate your audio in smaller wavs audios. The
 A group of folders with an audio/video file and an srt file.
 
 ## Init
-1. Clone this repo: git clone https://github.com/ciro97sa/LessonAble_Dataset_Generator
+1. Clone this repo: git clone https://github.com/ciro97sa/LessonAble_Dataset_Generator (if you're using LessonAble you should just cd in the folder)
 2. Install python requirements: pip install -r requirements.txt
 
 ``` bash
