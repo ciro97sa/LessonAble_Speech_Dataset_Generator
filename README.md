@@ -1,4 +1,4 @@
-# Lessonable Audio Dataset Generator
+# Lessonable Speech Dataset Generator
 Run this code if you have a _.mp4_ or a _.mp3_ file associated with an _.srt_. 
 The following lines of code will separate your audio in smaller wavs audios. The sentences pronunced in the wav audios will be written in the filelists.txt.
 
